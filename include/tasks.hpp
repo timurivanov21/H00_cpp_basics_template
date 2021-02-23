@@ -16,9 +16,7 @@ void reverse_1d_array(vector<int> &arr);
 
 void reverse_1d_array(int *arr_begin, int *arr_end);
 
-int find_largest_num(int *arr, int size, int n);
-
-double compute_mean(vector<int> &arr);
+int *find_max_element(int *arr, int size);
 
 vector<int> find_odd_numbers(vector<int> &arr);
 

@@ -232,3 +232,42 @@ TEST_CASE("reverse_1d_array (pointers) testcase") {
     }
 }
 
+TEST_CASE("find_max_element testcase") {
+
+    SECTION("passing a valid array") {
+
+        const int size = GENERATE(take(3, random(1, 100)));
+        const int max_index = GENERATE_COPY(take(3, random(0, size)));
+
+        const int max_value = GENERATE(take(3, random(10, 100)));
+
+        auto arr = generate_array(size, -100, max_value);
+
+        // set max element
+        arr[max_index] = max_value;
+
+        int *max_element = find_max_element(arr.data(), arr.size());
+
+        REQUIRE(max_element != nullptr);
+        CHECK(*max_element == max_value);
+    }
+
+    SECTION("passing nullptr array") {
+
+        int *max_element = find_max_element(nullptr, 10);
+
+        CHECK(max_element == nullptr);
+    }
+
+    SECTION("passing negative array size") {
+
+        const int size = GENERATE(values({-100, -10, -1, 0}));
+
+        std::vector<int> arr(3, 0);
+
+        int *max_element = find_max_element(arr.data(), size);
+
+        CHECK(max_element == nullptr);
+    }
+}
+
