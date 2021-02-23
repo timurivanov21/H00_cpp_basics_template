@@ -29,8 +29,8 @@ TEST_CASE("swap_args testcase") {
 
     SECTION("swap forth and back stack variables") {
 
-        int a = GENERATE(range(-10, 10, 3));
-        int b = GENERATE(range(-10, 10, 3));
+        int a = GENERATE(range(-10, 10, 1));
+        int b = GENERATE(range(-10, 10, 1));
 
         const int a_copy = a;
         const int b_copy = b;
@@ -48,8 +48,8 @@ TEST_CASE("swap_args testcase") {
 
     SECTION("swap forth and back heap variables") {
 
-        int *a = new int{GENERATE(range(-10, 10, 3))};
-        int *b = new int{GENERATE(range(-10, 10, 3))};
+        int *a = new int{GENERATE(range(-10, 10, 1))};
+        int *b = new int{GENERATE(range(-10, 10, 1))};
 
         const int a_copy = *a;
         const int b_copy = *b;
@@ -67,21 +67,42 @@ TEST_CASE("swap_args testcase") {
         delete a;
         delete b;
     }
+
+    SECTION("swap nullptr variables") {
+
+        int var = GENERATE(range(-10, 10, 2));
+
+        const int var_copy = var;
+
+        swap_args(nullptr, &var);
+
+        CHECK(var == var_copy);
+
+        swap_args(&var, nullptr);
+
+        CHECK(var == var_copy);
+    }
 }
 
 TEST_CASE("allocate_2d_array testcase") {
 
     SECTION("allocate 2d array of valid dimensions") {
 
-        const int num_rows = GENERATE(take(10, random(1, 10)));
-        const int num_cols = GENERATE(take(10, random(1, 10)));
-        const int init_value = GENERATE(values({-1, 0, 1}));
+        const int num_rows = GENERATE(range(1, 10));
+        const int num_cols = GENERATE(range(1, 10));
+
+        const int init_value = GENERATE(take(10, random(-100, 100)));
 
         int **arr = allocate_2d_array(num_rows, num_cols, init_value);
+
+        INFO("Array dimensions: " << num_rows << "x" << num_cols)
 
         REQUIRE(arr != nullptr);
 
         for (int row_index = 0; row_index < num_rows; row_index++) {
+
+            INFO("Array at row_index = " << row_index << " is nullptr")
+
             REQUIRE(arr[row_index] != nullptr);
 
             for (int col_index = 0; col_index < num_cols; col_index++) {
@@ -100,11 +121,14 @@ TEST_CASE("allocate_2d_array testcase") {
     SECTION("allocate 2d array of invalid dimensions") {
 
         SECTION("invalid number of rows") {
-            const int num_rows = GENERATE(values({-5, -1, 0}));
-            const int num_cols = GENERATE(take(10, random(1, 10)));
+            const int num_rows = GENERATE(range(-10, 0));
+            const int num_cols = GENERATE(take(100, random(1, 50)));
+
             const int init_value = GENERATE(values({-1, 0, 1}));
 
             int **arr = allocate_2d_array(num_rows, num_cols, init_value);
+
+            INFO("Array size is " << num_rows << "x" << num_cols << " with initial value = " << init_value);
 
             REQUIRE(arr == nullptr);
         }
@@ -125,10 +149,10 @@ TEST_CASE("copy_2d_array testcase") {
 
     SECTION("copy of valid 2d array") {
 
-        const int num_rows = GENERATE(take(10, random(1, 10)));
-        const int num_cols = GENERATE(take(10, random(1, 10)));
+        const int num_rows = GENERATE(range(1, 10));
+        const int num_cols = GENERATE(range(1, 10));
 
-        const auto values = generate_array(num_rows * num_cols, -10, 10);
+        const auto values = generate_array(num_rows * num_cols, -100, 100);
 
         // init test arrays
         int **arr = new int *[num_rows];
@@ -149,6 +173,10 @@ TEST_CASE("copy_2d_array testcase") {
         }
 
         const bool status = copy_2d_array(arr, arr_copy, num_rows, num_cols);
+
+        INFO("Array size is " << num_rows << "x" << num_cols)
+        INFO("Source array == nullptr? " << std::boolalpha << (arr == nullptr))
+        INFO("Target array == nullptr? " << std::boolalpha << (arr_copy == nullptr))
 
         CHECK(status == true);
 
@@ -180,6 +208,8 @@ TEST_CASE("copy_2d_array testcase") {
 
             const bool status = copy_2d_array(arr, arr_copy, 1, 1);
 
+            INFO("Source array == nullptr? " << std::boolalpha << (arr == nullptr))
+
             CHECK(status == false);
 
             delete[] arr[0];
@@ -195,6 +225,8 @@ TEST_CASE("copy_2d_array testcase") {
 
             const bool status = copy_2d_array(arr, arr_copy, 1, 1);
 
+            INFO("Target array == nullptr? " << std::boolalpha << (arr_copy == nullptr))
+
             CHECK(status == false);
 
             delete[] arr_copy[0];
@@ -205,9 +237,9 @@ TEST_CASE("copy_2d_array testcase") {
 
 TEST_CASE("reverse_1d_array (vector) testcase") {
 
-    const int size = GENERATE(take(100, random(1, 100)));
+    const int size = GENERATE(range(1, 10));
 
-    auto arr = generate_array(size, -10, 10);
+    auto arr = generate_array(size, -100, 100);
 
     auto arr_copy = arr;
 
@@ -222,9 +254,9 @@ TEST_CASE("reverse_1d_array (vector) testcase") {
 
 TEST_CASE("reverse_1d_array (pointers) testcase") {
 
-    const int size = GENERATE(take(100, random(1, 100)));
+    const int size = GENERATE(range(1, 10));
 
-    auto arr = generate_array(size, -10, 10);
+    auto arr = generate_array(size, -100, 100);
     auto arr_copy = arr;
 
     reverse_1d_array(arr.data(), arr.data() + size - 1);
@@ -240,15 +272,13 @@ TEST_CASE("find_max_element testcase") {
 
     SECTION("passing a valid array") {
 
-        const int size = GENERATE(take(3, random(1, 100)));
-        const int max_index = GENERATE_COPY(take(3, random(0, size)));
-
-        const int max_value = GENERATE(take(3, random(10, 100)));
+        const int size = GENERATE(range(1, 10));
+        const int max_index = GENERATE_COPY(take(50, random(0, size - 1)));
+        const int max_value = GENERATE(range(-50, 50, 10));
 
         auto arr = generate_array(size, -100, max_value);
 
-        // set max element
-        arr[max_index] = max_value;
+        arr.at(max_index) = max_value;
 
         int *max_element = find_max_element(arr.data(), arr.size());
 
@@ -258,18 +288,24 @@ TEST_CASE("find_max_element testcase") {
 
     SECTION("passing nullptr array") {
 
-        int *max_element = find_max_element(nullptr, 10);
+        const int size = GENERATE(range(0, 10));
+
+        int *max_element = find_max_element(nullptr, size);
+
+        INFO("Array iss nullptr? " << true)
 
         CHECK(max_element == nullptr);
     }
 
     SECTION("passing negative array size") {
 
-        const int size = GENERATE(values({-100, -10, -1, 0}));
+        const int size = GENERATE(range(-10, 0));
 
         std::vector<int> arr(3, 0);
 
         int *max_element = find_max_element(arr.data(), size);
+
+        INFO("Array size is " << size)
 
         CHECK(max_element == nullptr);
     }
@@ -278,7 +314,7 @@ TEST_CASE("find_max_element testcase") {
 TEST_CASE("find_odd_numbers testcase") {
     using Catch::Matchers::Equals;
 
-    const int size = GENERATE(take(10, random(1, 100)));
+    const int size = GENERATE(range(1, 50, 3));
 
     auto arr = generate_array(size, -100, 100);
 
@@ -299,8 +335,8 @@ TEST_CASE("find_odd_numbers testcase") {
 TEST_CASE("find_common_elements testcase") {
     using Catch::Matchers::Equals;
 
-    const int arr_a_size = GENERATE(take(50, random(1, 100)));
-    const int arr_b_size = GENERATE(take(50, random(1, 100)));
+    const int arr_a_size = GENERATE(range(1, 50, 5));
+    const int arr_b_size = GENERATE(range(1, 50, 5));
 
     auto arr_a = generate_array(arr_a_size, -100, 100);
     auto arr_b = generate_array(arr_b_size, -100, 100);

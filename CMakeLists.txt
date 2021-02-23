@@ -18,4 +18,5 @@ target_link_libraries(main PRIVATE tasks_lib)
 add_subdirectory(contrib)
 
 # tests
+enable_testing()
 add_subdirectory(tests)
