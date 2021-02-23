@@ -232,6 +232,30 @@ TEST_CASE("copy_2d_array testcase") {
             delete[] arr_copy[0];
             delete[] arr_copy;
         }
+
+        SECTION("invalid array dimensions") {
+
+            const int num_rows = GENERATE(range(-10, 0));
+            const int num_cols = GENERATE(range(-10, 0));
+
+            int **arr = new int *[1];
+            int **arr_copy = new int *[1];
+
+            arr[0] = new int[1]{};
+            arr_copy[0] = new int[1]{};
+
+            const bool status = copy_2d_array(arr, arr_copy, num_rows, num_cols);
+
+            INFO("Array dimensions are " << num_rows << "x" << num_cols)
+
+            CHECK(status == false);
+
+            delete[] arr[0];
+            delete[] arr;
+
+            delete[] arr_copy[0];
+            delete[] arr_copy;
+        }
     }
 }
 
@@ -254,18 +278,26 @@ TEST_CASE("reverse_1d_array (vector) testcase") {
 
 TEST_CASE("reverse_1d_array (pointers) testcase") {
 
-    const int size = GENERATE(range(1, 10));
+    SECTION("valid array pointers") {
 
-    auto arr = generate_array(size, -100, 100);
-    auto arr_copy = arr;
+        const int size = GENERATE(range(1, 10));
 
-    reverse_1d_array(arr.data(), arr.data() + size - 1);
+        auto arr = generate_array(size, -100, 100);
+        auto arr_copy = arr;
 
-    CHECK(arr.size() == arr_copy.size());
+        reverse_1d_array(arr.data(), arr.data() + size - 1);
 
-    for (int index = 0; index < arr.size(); index++) {
-        CHECK(arr[index] == arr_copy[arr_copy.size() - index - 1]);
+        CHECK(arr.size() == arr_copy.size());
+
+        for (int index = 0; index < arr.size(); index++) {
+            CHECK(arr[index] == arr_copy[arr_copy.size() - index - 1]);
+        }
     }
+
+    SECTION("invalid array pointers") {
+        reverse_1d_array(nullptr, nullptr);  // should not fail
+    }
+
 }
 
 TEST_CASE("find_max_element testcase") {
