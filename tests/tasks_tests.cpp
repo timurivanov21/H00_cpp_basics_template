@@ -1,5 +1,9 @@
 #include <catch2/catch.hpp>
 
+#include <random>
+#include <vector>
+#include <iostream>
+
 #include "tasks.hpp"
 
 TEST_CASE("swap_args testcase") {
@@ -94,6 +98,100 @@ TEST_CASE("allocate_2d_array testcase") {
             int **arr = allocate_2d_array(num_rows, num_cols, init_value);
 
             REQUIRE(arr == nullptr);
+        }
+    }
+}
+
+TEST_CASE("copy_2d_array testcase") {
+
+    std::random_device rand_dev;
+
+    SECTION("copy of valid 2d array") {
+
+        const int num_rows = GENERATE(take(5, random(1, 10)));
+        const int num_cols = GENERATE(take(5, random(1, 10)));
+
+        std::vector<int> values(num_rows * num_cols, 0);
+
+        {  // generate random values for 2d array
+
+            std::mt19937 rand_engine{rand_dev()};
+            std::uniform_int_distribution<int> dist{-10, 10};
+
+            for (int index = 0; index < num_rows * num_cols; index++) {
+                values[index] = dist(rand_engine);
+            }
+        }
+
+        // init test arrays
+        int **arr = new int *[num_rows];
+        int **arr_copy = new int *[num_rows];
+
+        int arr_index = 0;
+
+        for (int row_index = 0; row_index < num_rows; row_index++) {
+
+            arr[row_index] = new int[num_cols]{};
+            arr_copy[row_index] = new int[num_cols]{};
+
+            for (int col_index = 0; col_index < num_cols; col_index++) {
+
+                arr[row_index][col_index] = values[arr_index];
+                arr_index++;
+            }
+        }
+
+        const bool status = copy_2d_array(arr, arr_copy, num_rows, num_cols);
+
+        CHECK(status == true);
+
+        for (int row_index = 0; row_index < num_rows; row_index++) {
+            for (int col_index = 0; col_index < num_cols; col_index++) {
+
+                CHECK(arr[row_index][col_index] == arr_copy[row_index][col_index]);
+            }
+        }
+
+        // cleanup
+        for (int row_index = 0; row_index < num_rows; row_index++) {
+            delete[] arr[row_index];
+            delete[] arr_copy[row_index];
+        }
+
+        delete[] arr;
+        delete[] arr_copy;
+    }
+
+    SECTION("copy of invalid 2d array") {
+
+        SECTION("nullptr source array") {
+
+            int **arr = new int *[1];
+            arr[0] = new int[1]{};
+
+            int **arr_copy = nullptr;
+
+            const bool status = copy_2d_array(arr, arr_copy, 1, 1);
+
+            CHECK(status == false);
+
+            delete[] arr[0];
+            delete[] arr;
+        }
+
+        SECTION("nullptr target array") {
+
+            int **arr = nullptr;
+
+            int **arr_copy = new int *[1];
+            arr_copy[0] = new int[1]{};
+
+            const bool status = copy_2d_array(arr, arr_copy, 1, 1);
+
+            CHECK(status == false);
+
+            delete[] arr_copy[0];
+            delete[] arr_copy;
         }
     }
 }
