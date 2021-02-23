@@ -4,16 +4,44 @@
 
 TEST_CASE("swap_args testcase") {
 
-    SECTION("swap stack variables") {
-        int a = GENERATE(values({-10, -5, 0, 1, 3, 512}));
-        int b = GENERATE(values({-11, -3, 0, 2, 7, 361}));
+    SECTION("swap forth and back stack variables") {
 
-        const int prev_a = a;
-        const int prev_b = b;
+        int a = GENERATE(range(-10, 10, 3));
+        int b = GENERATE(range(-10, 10, 3));
 
-        swap_args(&a, &b);
+        const int a_copy = a;
+        const int b_copy = b;
 
-        CHECK(a == prev_b);
-        CHECK(b == prev_a);
+        swap_args(&a, &b);  // swap
+
+        CHECK(a == b_copy);
+        CHECK(b == a_copy);
+
+        swap_args(&a, &b);  // swap back
+
+        CHECK(a == a_copy);
+        CHECK(b == b_copy);
+    }
+
+    SECTION("swap forth and back heap variables") {
+
+        int *a = new int{GENERATE(range(-10, 10, 3))};
+        int *b = new int{GENERATE(range(-10, 10, 3))};
+
+        const int a_copy = *a;
+        const int b_copy = *b;
+
+        swap_args(a, b);
+
+        CHECK(*a == b_copy);
+        CHECK(*b == a_copy);
+
+        swap_args(a, b);
+
+        CHECK(*a == a_copy);
+        CHECK(*b == b_copy);
+
+        delete a;
+        delete b;
     }
 }
