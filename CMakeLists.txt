@@ -12,7 +12,7 @@ include_directories(include)
 
 # executables
 add_executable(main main.cpp)
-target_link_libraries(main PUBLIC tasks_lib)
+target_link_libraries(main PRIVATE tasks_lib)
 
 # dependencies
 add_subdirectory(contrib)

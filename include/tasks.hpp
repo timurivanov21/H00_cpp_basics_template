@@ -22,5 +22,11 @@ void reverse_array(vector<int> &arr);
 
 void reverse_array(int *arr_begin, int *arr_end);
 
-void print_each_nth_element(int *arr, int size, int n);
+int find_largest_num(int *arr, int size, int n);
+
+double compute_mean(vector<int> &arr);
+
+vector<int> find_odd_numbers(vector<int> &arr);
+
+vector<int> find_common_elements(vector<int> &arr_a, vector<int> &arr_b);
 
