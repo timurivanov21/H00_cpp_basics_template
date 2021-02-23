@@ -1,7 +1,11 @@
 #include <catch2/catch.hpp>
 
+#include <set>
+#include <cmath>
 #include <random>
 #include <vector>
+#include <iterator>
+#include <algorithm>
 
 #include "tasks.hpp"
 
@@ -292,3 +296,25 @@ TEST_CASE("find_odd_numbers testcase") {
     CHECK_THAT(odd_numbers, Equals(odd_numbers_ref));
 }
 
+TEST_CASE("find_common_elements testcase") {
+    using Catch::Matchers::Equals;
+
+    const int arr_a_size = GENERATE(take(50, random(1, 100)));
+    const int arr_b_size = GENERATE(take(50, random(1, 100)));
+
+    auto arr_a = generate_array(arr_a_size, -100, 100);
+    auto arr_b = generate_array(arr_b_size, -100, 100);
+
+    auto set_a = std::set<int>(arr_a.begin(), arr_a.end());
+    auto set_b = std::set<int>(arr_b.begin(), arr_b.end());
+
+    auto common_elements_ref = std::vector<int>{};
+    common_elements_ref.reserve(std::max(set_a.size(), set_b.size()));
+
+    std::set_intersection(set_a.begin(), set_a.end(),
+                          set_b.begin(), set_b.end(), std::back_inserter(common_elements_ref));
+
+    const auto common_elements = find_common_elements(arr_a, arr_b);
+
+    CHECK_THAT(common_elements, Equals(common_elements_ref));
+}
