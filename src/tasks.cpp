@@ -1,4 +1,5 @@
-#include <iostream>  // cout
+#include <iostream>   // cout
+#include <algorithm>  // copy, fill
 
 #include "tasks.hpp"
 
@@ -13,22 +14,10 @@ void swap_args(int *lhs, int *rhs) {
     // напишите код здесь ...
 }
 
-int *allocate_1d_array(int size) {
-    // напишите код здесь ...
-    return nullptr;
-}
 
 int **allocate_2d_array(int num_rows, int num_cols, int init_value) {
     // напишите код здесь ...
     return nullptr;
-}
-
-void deallocate_1d_array(int *arr) {
-    // напишите код здесь ...
-}
-
-void deallocate_2d_array(int **arr_2d, int num_rows) {
-    // напишите код здесь ...
 }
 
 bool copy_2d_array(int **arr_2d_source, int **arr_2d_target, int num_rows, int num_cols) {
@@ -36,10 +25,25 @@ bool copy_2d_array(int **arr_2d_source, int **arr_2d_target, int num_rows, int n
     return false;
 }
 
-void reverse_array(vector<int> &arr) {
+void reverse_1d_array(vector<int> &arr) {
     // напишите код здесь ...
 }
 
-void print_each_nth_element(int *arr, int size, int n) {
+void reverse_1d_array(int *arr_begin, int *arr_end) {
     // напишите код здесь ...
+}
+
+int *find_max_element(int *arr, int size) {
+    // напишите код здесь ...
+    return nullptr;
+}
+
+vector<int> find_odd_numbers(vector<int> &arr) {
+    // напишите код здесь ...
+    return {};
+}
+
+vector<int> find_common_elements(vector<int> &arr_a, vector<int> &arr_b) {
+    // напишите код здесь ...
+    return {};
 }
