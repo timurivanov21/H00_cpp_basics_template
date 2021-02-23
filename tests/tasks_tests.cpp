@@ -271,3 +271,24 @@ TEST_CASE("find_max_element testcase") {
     }
 }
 
+TEST_CASE("find_odd_numbers testcase") {
+    using Catch::Matchers::Equals;
+
+    const int size = GENERATE(take(10, random(1, 100)));
+
+    auto arr = generate_array(size, -100, 100);
+
+    auto odd_numbers_ref = std::vector<int>{};
+    odd_numbers_ref.reserve(arr.size());
+
+    for (int element: arr) {
+        if (element % 2 == 1) {
+            odd_numbers_ref.push_back(element);
+        }
+    }
+
+    const auto odd_numbers = find_odd_numbers(arr);
+
+    CHECK_THAT(odd_numbers, Equals(odd_numbers_ref));
+}
+
