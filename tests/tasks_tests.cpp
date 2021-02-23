@@ -2,9 +2,24 @@
 
 #include <random>
 #include <vector>
-#include <iostream>
 
 #include "tasks.hpp"
+
+vector<int> generate_array(int size, int start_value, int end_value) {
+    std::random_device rand_dev;
+
+    std::vector<int> values(size, 0);
+
+    // generate random values for 2d array
+    std::mt19937 rand_engine{rand_dev()};
+    std::uniform_int_distribution<int> dist{start_value, end_value};
+
+    for (int &value : values) {
+        value = dist(rand_engine);
+    }
+
+    return values;
+}
 
 TEST_CASE("swap_args testcase") {
 
@@ -54,8 +69,8 @@ TEST_CASE("allocate_2d_array testcase") {
 
     SECTION("allocate 2d array of valid dimensions") {
 
-        const int num_rows = GENERATE(take(5, random(1, 10)));
-        const int num_cols = GENERATE(take(5, random(1, 10)));
+        const int num_rows = GENERATE(take(10, random(1, 10)));
+        const int num_cols = GENERATE(take(10, random(1, 10)));
         const int init_value = GENERATE(values({-1, 0, 1}));
 
         int **arr = allocate_2d_array(num_rows, num_cols, init_value);
@@ -82,7 +97,7 @@ TEST_CASE("allocate_2d_array testcase") {
 
         SECTION("invalid number of rows") {
             const int num_rows = GENERATE(values({-5, -1, 0}));
-            const int num_cols = GENERATE(take(5, random(1, 10)));
+            const int num_cols = GENERATE(take(10, random(1, 10)));
             const int init_value = GENERATE(values({-1, 0, 1}));
 
             int **arr = allocate_2d_array(num_rows, num_cols, init_value);
@@ -91,7 +106,7 @@ TEST_CASE("allocate_2d_array testcase") {
         }
 
         SECTION("invalid number of columns") {
-            const int num_rows = GENERATE(take(5, random(1, 10)));
+            const int num_rows = GENERATE(take(10, random(1, 10)));
             const int num_cols = GENERATE(values({-5, -1, 0}));
             const int init_value = GENERATE(values({-1, 0, 1}));
 
@@ -104,24 +119,12 @@ TEST_CASE("allocate_2d_array testcase") {
 
 TEST_CASE("copy_2d_array testcase") {
 
-    std::random_device rand_dev;
-
     SECTION("copy of valid 2d array") {
 
-        const int num_rows = GENERATE(take(5, random(1, 10)));
-        const int num_cols = GENERATE(take(5, random(1, 10)));
+        const int num_rows = GENERATE(take(10, random(1, 10)));
+        const int num_cols = GENERATE(take(10, random(1, 10)));
 
-        std::vector<int> values(num_rows * num_cols, 0);
-
-        {  // generate random values for 2d array
-
-            std::mt19937 rand_engine{rand_dev()};
-            std::uniform_int_distribution<int> dist{-10, 10};
-
-            for (int index = 0; index < num_rows * num_cols; index++) {
-                values[index] = dist(rand_engine);
-            }
-        }
+        const auto values = generate_array(num_rows * num_cols, -10, 10);
 
         // init test arrays
         int **arr = new int *[num_rows];
@@ -193,6 +196,39 @@ TEST_CASE("copy_2d_array testcase") {
             delete[] arr_copy[0];
             delete[] arr_copy;
         }
+    }
+}
+
+TEST_CASE("reverse_1d_array (vector) testcase") {
+
+    const int size = GENERATE(take(100, random(1, 100)));
+
+    auto arr = generate_array(size, -10, 10);
+
+    auto arr_copy = arr;
+
+    reverse_1d_array(arr);
+
+    CHECK(arr.size() == arr_copy.size());
+
+    for (int index = 0; index < arr.size(); index++) {
+        CHECK(arr[index] == arr_copy[arr_copy.size() - index - 1]);
+    }
+}
+
+TEST_CASE("reverse_1d_array (pointers) testcase") {
+
+    const int size = GENERATE(take(100, random(1, 100)));
+
+    auto arr = generate_array(size, -10, 10);
+    auto arr_copy = arr;
+
+    reverse_1d_array(arr.data(), arr.data() + size - 1);
+
+    CHECK(arr.size() == arr_copy.size());
+
+    for (int index = 0; index < arr.size(); index++) {
+        CHECK(arr[index] == arr_copy[arr_copy.size() - index - 1]);
     }
 }
 

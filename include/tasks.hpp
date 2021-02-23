@@ -12,9 +12,9 @@ int **allocate_2d_array(int num_rows, int num_cols, int init_value);
 
 bool copy_2d_array(int **arr_2d_source, int **arr_2d_target, int num_rows, int num_cols);
 
-void reverse_array(vector<int> &arr);
+void reverse_1d_array(vector<int> &arr);
 
-void reverse_array(int *arr_begin, int *arr_end);
+void reverse_1d_array(int *arr_begin, int *arr_end);
 
 int find_largest_num(int *arr, int size, int n);
 
