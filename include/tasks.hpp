@@ -8,13 +8,7 @@ using std::vector;
 
 void swap_args(int *lhs, int *rhs);
 
-int *allocate_1d_array(int size);
-
 int **allocate_2d_array(int num_rows, int num_cols, int init_value);
-
-void deallocate_1d_array(int *arr);
-
-void deallocate_2d_array(int **arr_2d, int num_rows);
 
 bool copy_2d_array(int **arr_2d_source, int **arr_2d_target, int num_rows, int num_cols);
 

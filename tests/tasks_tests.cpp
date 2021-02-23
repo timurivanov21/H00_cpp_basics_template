@@ -45,3 +45,56 @@ TEST_CASE("swap_args testcase") {
         delete b;
     }
 }
+
+TEST_CASE("allocate_2d_array testcase") {
+
+    SECTION("allocate 2d array of valid dimensions") {
+
+        const int num_rows = GENERATE(take(5, random(1, 10)));
+        const int num_cols = GENERATE(take(5, random(1, 10)));
+        const int init_value = GENERATE(values({-1, 0, 1}));
+
+        int **arr = allocate_2d_array(num_rows, num_cols, init_value);
+
+        REQUIRE(arr != nullptr);
+
+        for (int row_index = 0; row_index < num_rows; row_index++) {
+            REQUIRE(arr[row_index] != nullptr);
+
+            for (int col_index = 0; col_index < num_cols; col_index++) {
+                CHECK(arr[row_index][col_index] == init_value);
+            }
+        }
+
+        // cleanup
+        for (int row_index = 0; row_index < num_rows; row_index++) {
+            delete[] arr[row_index];
+        }
+
+        delete[] arr;
+    }
+
+    SECTION("allocate 2d array of invalid dimensions") {
+
+        SECTION("invalid number of rows") {
+            const int num_rows = GENERATE(values({-5, -1, 0}));
+            const int num_cols = GENERATE(take(5, random(1, 10)));
+            const int init_value = GENERATE(values({-1, 0, 1}));
+
+            int **arr = allocate_2d_array(num_rows, num_cols, init_value);
+
+            REQUIRE(arr == nullptr);
+        }
+
+        SECTION("invalid number of columns") {
+            const int num_rows = GENERATE(take(5, random(1, 10)));
+            const int num_cols = GENERATE(values({-5, -1, 0}));
+            const int init_value = GENERATE(values({-1, 0, 1}));
+
+            int **arr = allocate_2d_array(num_rows, num_cols, init_value);
+
+            REQUIRE(arr == nullptr);
+        }
+    }
+}
+
