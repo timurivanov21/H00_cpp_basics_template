@@ -365,7 +365,7 @@ TEST_CASE("find_odd_numbers testcase") {
 }
 
 TEST_CASE("find_common_elements testcase") {
-    using Catch::Matchers::Equals;
+    using Catch::Matchers::UnorderedEquals;
 
     const int arr_a_size = GENERATE(range(1, 50, 5));
     const int arr_b_size = GENERATE(range(1, 50, 5));
@@ -380,9 +380,17 @@ TEST_CASE("find_common_elements testcase") {
     common_elements_ref.reserve(std::max(set_a.size(), set_b.size()));
 
     std::set_intersection(set_a.begin(), set_a.end(),
-                          set_b.begin(), set_b.end(), std::back_inserter(common_elements_ref));
+                          set_b.begin(), set_b.end(),
+                          std::back_inserter(common_elements_ref));
 
     const auto common_elements = find_common_elements(arr_a, arr_b);
 
-    CHECK_THAT(common_elements, Equals(common_elements_ref));
+    // remove duplicates
+    const auto common_elements_set = std::set<int>(common_elements.cbegin(), common_elements.cend());
+
+    // convert back to vector
+    const auto elements = std::vector<int>(common_elements_set.begin(), common_elements_set.end());
+
+    // check for equality under permutation
+    CHECK_THAT(elements, UnorderedEquals(common_elements_ref));
 }
