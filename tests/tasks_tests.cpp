@@ -354,7 +354,7 @@ TEST_CASE("find_odd_numbers testcase") {
     odd_numbers_ref.reserve(arr.size());
 
     for (int element: arr) {
-        if (element % 2 == 1) {
+        if (std::abs(element) % 2 == 1) {
             odd_numbers_ref.push_back(element);
         }
     }
