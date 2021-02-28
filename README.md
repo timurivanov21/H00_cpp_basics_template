@@ -98,7 +98,10 @@ git clone --recurse-submodules https://github.com/Algorithms-and-Data-Structures
 
 Для запуска всех тестов запустите исполняемый файл `run_tests`.
 
+![Запуск всех тестов](assets/how-to-run-all-tests.png)
+
 Запуск программы также можно осуществить через исполняемый файл `main`.
+
 
 ## Заметки
 - Решения будут оценены лишь в том случае, если программа компилируется:
